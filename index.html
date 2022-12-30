@@ -159,11 +159,11 @@
         });
 
         /* GeoJSON Polyline */
-        var sungai = L.geoJson(null, {
+        var Sungai = L.geoJson(null, {
             /* Style polyline */
             style: function (feature) { //Fungsi style polyline
                 return {
-                    color: "#5186db", //Warna garis
+                    color: "#115ed9", //Warna garis
                     weight: 1, //Tebal garis
                     opacity: 1, //Transparansi garis
                 };
@@ -180,24 +180,58 @@
                         });
                     },
                     mouseout: function (e) { //Fungsi ketika mouse keluar dari area obyek
-                        sungai.resetStyle(e.target); //Mengembalikan style garis ke style awal
+                        Sungai.resetStyle(e.target); //Mengembalikan style garis ke style awal
                         map.closePopup(); //Menutup popup
                     },
                     click: function (e) { //Fungsi ketika obyek di-klik
                         var content = "Keterangan: " + feature.properties.KETERANGAN + "<br>" +
                             "Panjang: " + feature.properties.PANJANG_KM + " Km";
-                        sungai.bindPopup(content); //Popup
+                        Sungai.bindPopup(content); //Popup
                     }
                 });
             }
         });
         /* memanggil data geojson polyline */
-        $.getJSON("sungai.geojson", function (data) {
-            sungai.addData(data);
-            map.addLayer(sungai); //sungai ditampilkan ketika halaman dipanggil
+        $.getJSON("Sungai.geojson", function (data) {
+            Sungai.addData(data);
+            map.addLayer(Sungai); //Sungai ditampilkan ketika halaman dipanggil
         });
 
+        /* GeoJSON Point */
+        var wisata = L.geoJson(null, {
+            pointToLayer: function (feature, latlng) {
+                return L.marker(latlng, {
+                    icon: L.icon({
+                        iconUrl: "https://cdn-icons-png.flaticon.com/512/6554/6554183.png", //icon simbol
+                        iconSize: [28, 28], //ukuran icon simbol
+                        iconAnchor: [14, 28], //penempatan icon simbol
+                        popupAnchor: [0, -28], //penempatan popup terhadap icon simbol
+                    })
+                });
+            },
+            /* Popup */
+            onEachFeature: function (feature, layer) {
+                if (feature.properties) {
+                    /* Variabel untuk memanggil atribut dari data geojson */
+                    var content = "Nama : <b>" + feature.properties.Nama + "</b><br>" +
+                        "Jenis : <b>" + feature.properties.Jenis + "</b><br>" +
+                        "Alamat : <b>" + feature.properties.Alamat + "</b><br>" +
+                        "Rating : <b>" + feature.properties.Rating + "</b><br>"
+                    layer.on({
+                        click: function (e) { //Fungsi ketika icon simbol di-klik
+                            wisata.bindPopup(content);
+                        }
+                    });
+                }
+            }
+        });
+        /* memanggil data geojson point */
+        $.getJSON("wisata_pt.geojson", function (data) {
+            wisata.addData(data);
+            map.addLayer(wisata); //wisata ditampilkan ketika halaman dipanggil
+        });
 
+     
         //akhir layar peta
 
 
@@ -210,7 +244,8 @@
         var Layers = {  //list layer
             'Jalan Utama': jalanutama,
             'Admin Desa': admindesa,
-            'Sungai': sungai,
+            'Sungai': Sungai,
+            'Tempat Wisata': wisata,
 
         };
         var layerControl = L.control.layers(baseMaps, Layers, { collapsed: false });
